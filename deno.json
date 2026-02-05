@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-all server.ts",
+    "start": "deno run --allow-all server.ts"
+  }
+}

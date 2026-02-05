@@ -1,7 +1,10 @@
 import { Hono } from "https://deno.land/x/hono@v3.2.7/mod.ts";
+import { serveStatic } from "https://deno.land/x/hono@v3.2.7/middleware.ts";
 import { getSystemStats } from "./util.ts";
 
 const app = new Hono();
+
+app.use("/", serveStatic({ root: "./", index: "index.html" }));
 
 app.get("/api/sys-info", async (c) => {
   try {

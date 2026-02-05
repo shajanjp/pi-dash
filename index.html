@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pi Dash</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+  </head>
+  <body
+    class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-6 font-sans"
+  >
+    <div class="container mx-auto max-w-6xl">
+      <header class="text-center mb-10">
+        <h1 class="text-5xl font-extrabold text-white mb-3">
+          <i class="fas fa-microchip text-blue-400 mr-3"></i>Pi-Dash System
+          Monitor
+        </h1>
+        <p class="text-xl text-gray-300">
+          Real-time insights into your system's performance
+        </p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- CPU Cores -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-blue-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-blue-400 text-4xl">
+            <i class="fas fa-server"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">CPU Cores</h2>
+            <p id="cores" class="text-3xl font-bold text-white">Loading...</p>
+          </div>
+        </div>
+
+        <!-- CPU Usage -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-green-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-green-400 text-4xl">
+            <i class="fas fa-tachometer-alt"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">CPU Usage</h2>
+            <p id="cpuUsage" class="text-3xl font-bold text-white">
+              Loading...
+            </p>
+          </div>
+        </div>
+
+        <!-- Temperature -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-red-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-red-400 text-4xl">
+            <i class="fas fa-thermometer-half"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">Temperature</h2>
+            <p id="temperature" class="text-3xl font-bold text-white">
+              Loading...
+            </p>
+          </div>
+        </div>
+
+        <!-- Memory Total -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-purple-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-purple-400 text-4xl">
+            <i class="fas fa-memory"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">Memory Total</h2>
+            <p id="memoryTotal" class="text-3xl font-bold text-white">
+              Loading...
+            </p>
+          </div>
+        </div>
+
+        <!-- Memory Used -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-yellow-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-yellow-400 text-4xl">
+            <i class="fas fa-hdd"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">Memory Used</h2>
+            <p id="memoryUsed" class="text-3xl font-bold text-white">
+              Loading...
+            </p>
+          </div>
+        </div>
+
+        <!-- Load Average -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-indigo-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-indigo-400 text-4xl">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">
+              Load Average (1m, 5m, 15m)
+            </h2>
+            <p id="loadAvg" class="text-3xl font-bold text-white">Loading...</p>
+          </div>
+        </div>
+
+        <!-- Uptime -->
+        <div
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-pink-500 transform transition duration-300 hover:scale-105"
+        >
+          <div class="text-pink-400 text-4xl">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-200">Uptime</h2>
+            <p id="uptime" class="text-3xl font-bold text-white">Loading...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function fetchSystemStats() {
+        try {
+          const response = await fetch("/api/sys-info");
+          const data = await response.json();
+
+          if (response.ok) {
+            document.getElementById("cores").textContent = data.cores;
+            document.getElementById("cpuUsage").textContent = `${
+              data.cpuUsage.toFixed(2)
+            }%`;
+            document.getElementById("temperature").textContent =
+              `${data.temperature}°C`;
+            document.getElementById("memoryTotal").textContent = `${
+              (data.memory.totalMB / 1024).toFixed(2)
+            } GB`;
+            document.getElementById("memoryUsed").textContent = `${
+              (data.memory.usedMB / 1024).toFixed(2)
+            } GB`;
+            document.getElementById("loadAvg").textContent = data
+              .loadAvg.map((l) => l.toFixed(2)).join(", ");
+
+            const hours = Math.floor(data.uptimeMinutes / 60);
+            const minutes = Math.floor(data.uptimeMinutes % 60);
+            document.getElementById("uptime").textContent =
+              `${hours}h ${minutes}m`;
+          } else {
+            console.error("Error fetching system stats:", data.error);
+            document.querySelectorAll("p[id]").forEach((el) =>
+              el.textContent = "N/A"
+            );
+          }
+        } catch (error) {
+          console.error("Network error or API down:", error);
+          document.querySelectorAll("p[id]").forEach((el) =>
+            el.textContent = "N/A"
+          );
+        }
+      }
+
+      // Fetch immediately on load
+      fetchSystemStats();
+      // Poll every 1 second
+      setInterval(fetchSystemStats, 1000);
+    </script>
+  </body>
+</html>
