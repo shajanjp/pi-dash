@@ -88,12 +88,14 @@ async function getCpuUsage(delay = 400) {
 }
 
 export async function getSystemStats() {
+  const memory = await getMemory();
+  const loadAvg = await getLoad();
   return {
     cores: getCores(),
-    cpuUsage: await getCpuUsage(),
-    temperature: await getTemp(),
-    memory: await getMemory(),
-    loadAvg: await getLoad(),
-    uptimeMinutes: await getUptime(),
+    cpuUsage: (await getCpuUsage()) ?? 0,
+    temperature: (await getTemp()) ?? 0,
+    memory: memory ?? { totalMB: 0, usedMB: 0 },
+    loadAvg: loadAvg ?? [0, 0, 0],
+    uptimeMinutes: (await getUptime()) ?? 0,
   };
 }

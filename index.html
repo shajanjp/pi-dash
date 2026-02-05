@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pi Dash</title>
+    <title>SysDash</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome CDN for icons -->
@@ -11,14 +11,16 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     >
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body
-    class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-6 font-sans"
+    class="bg-gray-800 text-gray-100 p-6 font-sans"
   >
     <div class="container mx-auto max-w-6xl">
       <header class="text-center mb-10">
         <h1 class="text-5xl font-extrabold text-white mb-3">
-          <i class="fas fa-microchip text-blue-400 mr-3"></i>Pi-Dash System
+          <i class="fas fa-microchip text-blue-400 mr-3"></i>SysDash System
           Monitor
         </h1>
         <p class="text-xl text-gray-300">
@@ -29,50 +31,62 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- CPU Cores -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-blue-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-start space-x-4 border border-blue-500 transform transition duration-300 hover:scale-105"
         >
           <div class="text-blue-400 text-4xl">
             <i class="fas fa-server"></i>
           </div>
           <div>
             <h2 class="text-lg font-semibold text-gray-200">CPU Cores</h2>
-            <p id="cores" class="text-3xl font-bold text-white">Loading...</p>
+            <p id="cores" class="text-3xl font-bold text-white mb-2">
+              Loading...
+            </p>
           </div>
         </div>
 
         <!-- CPU Usage -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-green-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col justify-between border border-green-500 transform transition duration-300 hover:scale-105"
         >
-          <div class="text-green-400 text-4xl">
-            <i class="fas fa-tachometer-alt"></i>
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="text-green-400 text-4xl">
+              <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-200">CPU Usage</h2>
+              <p id="cpuUsage" class="text-3xl font-bold text-white">
+                Loading...
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-200">CPU Usage</h2>
-            <p id="cpuUsage" class="text-3xl font-bold text-white">
-              Loading...
-            </p>
+          <div class="mt-auto">
+            <canvas id="cpuUsageChart" class="w-full h-24"></canvas>
           </div>
         </div>
 
         <!-- Temperature -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-red-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col justify-between border border-red-500 transform transition duration-300 hover:scale-105"
         >
-          <div class="text-red-400 text-4xl">
-            <i class="fas fa-thermometer-half"></i>
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="text-red-400 text-4xl">
+              <i class="fas fa-thermometer-half"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-200">Temperature</h2>
+              <p id="temperature" class="text-3xl font-bold text-white">
+                Loading...
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-200">Temperature</h2>
-            <p id="temperature" class="text-3xl font-bold text-white">
-              Loading...
-            </p>
+          <div class="mt-auto">
+            <canvas id="temperatureChart" class="w-full h-24"></canvas>
           </div>
         </div>
 
         <!-- Memory Total -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-purple-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-start space-x-4 border border-purple-500 transform transition duration-300 hover:scale-105"
         >
           <div class="text-purple-400 text-4xl">
             <i class="fas fa-memory"></i>
@@ -87,37 +101,49 @@
 
         <!-- Memory Used -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-yellow-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col justify-between border border-yellow-500 transform transition duration-300 hover:scale-105"
         >
-          <div class="text-yellow-400 text-4xl">
-            <i class="fas fa-hdd"></i>
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="text-yellow-400 text-4xl">
+              <i class="fas fa-hdd"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-200">Memory Used</h2>
+              <p id="memoryUsed" class="text-3xl font-bold text-white">
+                Loading...
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-200">Memory Used</h2>
-            <p id="memoryUsed" class="text-3xl font-bold text-white">
-              Loading...
-            </p>
+          <div class="mt-auto">
+            <canvas id="memoryUsedChart" class="w-full h-24"></canvas>
           </div>
         </div>
 
         <!-- Load Average -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-indigo-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col justify-between border border-indigo-500 transform transition duration-300 hover:scale-105"
         >
-          <div class="text-indigo-400 text-4xl">
-            <i class="fas fa-chart-line"></i>
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="text-indigo-400 text-4xl">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-200">
+                Load Average (1m, 5m, 15m)
+              </h2>
+              <p id="loadAvg" class="text-3xl font-bold text-white">
+                Loading...
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-200">
-              Load Average (1m, 5m, 15m)
-            </h2>
-            <p id="loadAvg" class="text-3xl font-bold text-white">Loading...</p>
+          <div class="mt-auto">
+            <canvas id="loadAvgChart" class="w-full h-24"></canvas>
           </div>
         </div>
 
         <!-- Uptime -->
         <div
-          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-center space-x-4 border border-pink-500 transform transition duration-300 hover:scale-105"
+          class="bg-gray-800 rounded-xl shadow-lg p-6 flex items-start space-x-4 border border-pink-500 transform transition duration-300 hover:scale-105"
         >
           <div class="text-pink-400 text-4xl">
             <i class="fas fa-clock"></i>
@@ -131,12 +157,130 @@
     </div>
 
     <script>
+      const CHART_HISTORY_LENGTH = 30; // 30 data points for 30 seconds history
+
+      let cpuUsageChart,
+        temperatureChart,
+        memoryUsedChart,
+        loadAvgChart;
+      let cpuUsageHistory = [],
+        temperatureHistory = [],
+        memoryUsedHistory = [],
+        loadAvgHistory = [];
+
+      function createChart(ctx, label, borderColor, data) {
+        return new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: Array(CHART_HISTORY_LENGTH).fill(""), // Empty labels for time series
+            datasets: [{
+              label: label,
+              data: data,
+              borderColor: borderColor,
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.1,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                display: false,
+              },
+              y: {
+                display: false,
+                beginAtZero: true,
+                max: (label === "CPU Usage" || label === "Memory Used")
+                  ? 100
+                  : undefined, // Max 100 for percentage
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                enabled: false,
+              },
+            },
+          },
+        });
+      }
+
+      function initCharts() {
+        const commonChartOptions = {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false,
+            },
+            y: {
+              display: false,
+              beginAtZero: true,
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              enabled: false,
+            },
+          },
+          elements: {
+            line: {
+              tension: 0.4, // Smooth lines
+            },
+            point: {
+              radius: 0, // No points
+            },
+          },
+          animation: {
+            duration: 0, // Disable animation for real-time updates
+          },
+        };
+
+        cpuUsageChart = createChart(
+          document.getElementById("cpuUsageChart").getContext("2d"),
+          "CPU Usage",
+          "#34D399", // green-400
+          cpuUsageHistory,
+        );
+        temperatureChart = createChart(
+          document.getElementById("temperatureChart").getContext("2d"),
+          "Temperature",
+          "#F87171", // red-400
+          temperatureHistory,
+        );
+        memoryUsedChart = createChart(
+          document.getElementById("memoryUsedChart").getContext("2d"),
+          "Memory Used",
+          "#FBBF24", // yellow-400
+          memoryUsedHistory,
+        );
+        loadAvgChart = createChart(
+          document.getElementById("loadAvgChart").getContext("2d"),
+          "Load Average",
+          "#818CF8", // indigo-400
+          loadAvgHistory,
+        );
+
+        // Set max values for charts that represent percentages
+        cpuUsageChart.options.scales.y.max = 100;
+        memoryUsedChart.options.scales.y.max = 100;
+      }
+
       async function fetchSystemStats() {
         try {
           const response = await fetch("/api/sys-info");
           const data = await response.json();
 
           if (response.ok) {
+            // Update text values
             document.getElementById("cores").textContent = data.cores;
             document.getElementById("cpuUsage").textContent = `${
               data.cpuUsage.toFixed(2)
@@ -156,6 +300,41 @@
             const minutes = Math.floor(data.uptimeMinutes % 60);
             document.getElementById("uptime").textContent =
               `${hours}h ${minutes}m`;
+
+            // Update chart data
+            const updateChartData = (history, newData, chart) => {
+              history.push(newData);
+              if (history.length > CHART_HISTORY_LENGTH) {
+                history.shift();
+              }
+              chart.data.datasets[0].data = history;
+              chart.update();
+            };
+
+            updateChartData(
+              cpuUsageHistory,
+              data.cpuUsage,
+              cpuUsageChart,
+            );
+            updateChartData(
+              temperatureHistory,
+              data.temperature,
+              temperatureChart,
+            );
+            const memoryUsedPercentage = data.memory.totalMB > 0
+              ? (data.memory.usedMB / data.memory.totalMB) * 100
+              : 0;
+            updateChartData(
+              memoryUsedHistory,
+              memoryUsedPercentage,
+              memoryUsedChart,
+            );
+            // For load average, we'll use the 1-minute load average
+            updateChartData(
+              loadAvgHistory,
+              data.loadAvg[0],
+              loadAvgChart,
+            );
           } else {
             console.error("Error fetching system stats:", data.error);
             document.querySelectorAll("p[id]").forEach((el) =>
@@ -170,10 +349,12 @@
         }
       }
 
-      // Fetch immediately on load
-      fetchSystemStats();
-      // Poll every 1 second
-      setInterval(fetchSystemStats, 1000);
+      // Initialize charts and then start fetching data
+      window.onload = () => {
+        initCharts();
+        fetchSystemStats(); // Initial fetch
+        setInterval(fetchSystemStats, 1000); // Poll every 1 second
+      };
     </script>
   </body>
 </html>
